@@ -1,0 +1,165 @@
+/* Define color variables for easy maintenance */
+:root {
+  --primary: #007bff; /* Blue for primary actions */
+  --secondary: #6c757d; /* Gray for secondary elements */
+  --success: #28a745; /* Green for success states */
+  --error: #dc3545; /* Red for error states */
+  --background: #f8f9fa; /* Light gray for background */
+  --text: #212529; /* Dark gray for text */
+}
+
+/* Set global styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  margin: 40px auto;
+  max-width: 800px;
+  padding: 10px;
+}
+
+/* Header styling */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Increase space between logo and navigation for Arabic and Urdu */
+html[lang="ar"] header,
+html[lang="ur"] header {
+  margin-bottom: 40px;
+}
+
+#connection {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: var(--secondary);
+}
+
+/* Status message styling */
+#status {
+  display: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+#status.success {
+  background: #e0ffe0;
+  border: 1px solid var(--success);
+}
+
+#status.error {
+  background: #ffe0e0;
+  border: 1px solid var(--error);
+}
+
+/* Dashboard styling */
+#dashboard {
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+/* Tabs styling */
+#tabs {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#tabs button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#tabs button.active {
+  background-color: #0056b3;
+}
+
+/* Function sections styling */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.function {
+  border: 1px solid var(--secondary);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background: white;
+}
+
+.function h3 {
+  margin-top: 0;
+  color: var(--primary);
+}
+
+/* Form elements styling */
+label {
+  display: block;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Boolean input arrows */
+.bool-container button {
+  margin-right: 5px;
+  padding: 4px 8px;
+}
+
+/* Help icon styling */
+.fa-question-circle {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 1.2em;
+  margin-left: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    max-width: 100%;
+    padding: 10px;
+  }
+  .function {
+    padding: 10px;
+  }
+  #tabs button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
+}
