@@ -128,16 +128,6 @@ These functions are unique to the INVTRON DAO's logic.
 * **Inputs:**
   * info (tuple): Personal details containing firstName, lastName, mobile, zipCode, city, state, country, bio.
 
-#### **getWhitelistingReqStatus** (in `WhitelistManager`)
-
-* **Purpose:** Returns the status of a user's whitelisting request.
-* **Inputs:**
-  * user (address): Address to query.
-
-#### **getWwhitelistReqList** (in `WhitelistManager`)
-
-* **Purpose:** Fetches all pending whitelisting requests.
-
 #### **ceoApproveWhitelisting** (in `WhitelistManager`)
 
 * **Purpose:** CEO can approve or reject whitelisting requests.
@@ -233,7 +223,7 @@ These functions implement the permanent leaderboard system for Endorsers.
 
 #### **voteOnFundingByUser**
 
-* **Purpose:** Called by any INV token holder to vote on an Active funding request. The vote weight adds the caller's own voting power and any voting power delegated to them, each derived from `(token balance × token price) / 200` using the latest price feed. Only 0.5% of this USD value counts toward the request, and it is capped at 10% of the funding goal.
+* **Purpose:** Called by any INV token holder to vote on an Active funding request. The vote weight adds the caller's own voting power and any voting power delegated to them. Each component is computed from a snapshot using `getPastVotes` and the latest price as 0.5% of the USD value of that voting power, capped at 10% of the request amount.
 * **Inputs:**
   * id (uint256): The unique ID of the funding request.
   * inFavor (bool): true for YES, false for NO.
@@ -251,9 +241,9 @@ These functions implement the permanent leaderboard system for Endorsers.
 * **Inputs:**
   * None.
 
-#### **approveFundingRequest**
+#### **releaseFundingRequest**
 
-* **Purpose:** Called by the CEO after voting ends on a funding request. If the proposal passed, this marks it as CEO approved.
+* **Purpose:** Called by the CEO after voting ends on a funding request. If the proposal passed, this marks it as CEO approved so it can be executed.
 * **Inputs:**
   * id (uint256): The ID of the funding request to approve.
 
@@ -278,6 +268,48 @@ These functions implement the permanent leaderboard system for Endorsers.
 * **Inputs:**
   * fundingRequestId (uint256): The funding request the tokens were minted for.
   * invUsdAmount (uint256): The amount of INV-USD to exchange.
+
+#### **expireCeoApplication**
+
+* **Purpose:** Anyone can expire a Pending CEO application after its deadline if endorsers did not reach quorum.
+* **Inputs:**
+  * id (uint256): The application ID to expire.
+
+#### **expireFundingRequest**
+
+* **Purpose:** Anyone can expire a Pending funding request after its deadline if endorsers did not reach quorum.
+* **Inputs:**
+  * id (uint256): The funding request ID to expire.
+
+#### **finalizeFundingRequest**
+
+* **Purpose:** Anyone can finalize an Active funding request after its voting period if it failed (for ≤ against). Enables reward claims.
+* **Inputs:**
+  * id (uint256): The funding request ID to finalize.
+
+#### **increaseTotalVestedTokens**
+
+* **Purpose:** CEO-only. Increases the amount of vested tokens excluded from circulation. Reverts if this would exceed total supply once locked and unswapped tokens are considered.
+* **Inputs:**
+  * amount (uint256): Amount to add (INV wei).
+
+#### **decreaseTotalVestedTokens**
+
+* **Purpose:** CEO-only. Decreases the amount of vested tokens. Reverts if amount exceeds current vested total.
+* **Inputs:**
+  * amount (uint256): Amount to subtract (INV wei).
+
+#### **increaseTotalUnswapped**
+
+* **Purpose:** CEO-only. Increases the unswapped INV-USD tally excluded from circulation. Reverts if this would exceed total supply once vested and locked tokens are considered.
+* **Inputs:**
+  * amount (uint256): Amount to add (INV-USD wei).
+
+#### **decreaseTotalUnswapped**
+
+* **Purpose:** CEO-only. Decreases the unswapped INV-USD tally. Reverts if amount exceeds current unswapped total.
+* **Inputs:**
+  * amount (uint256): Amount to subtract (INV-USD wei).
 
 ### **B. Inherited Standard Functions**
 
@@ -369,15 +401,25 @@ These functions retrieve data from the contract and do not cost any gas.
 * **ceoUsersVoted**: Takes a CEO application id and a user address; returns true if they have voted.  
 * **fundingEndorsersVoted**: Takes a funding request id and an endorser address; returns true if they have voted.
 * **fundingUsersVoted**: Takes a funding request id and a user address; returns true if they have voted.
+* **fundingUserVoteChoice**: Takes a funding request id and a user address; returns whether the user voted in favor.
+* **votingPowerAtVote**: Returns the stored USD(6) voting power snapshot for a voter on a funding request.
+* **delegateePowerAtVote**: Returns the portion of the caller’s own USD(6) voting power recorded at vote time.
+* **delegateAtVote**: Returns the delegate address recorded at the time of voting for a funding request.
+* **rewardClaimed**: Takes a funding request id and a user address; returns true if the user already claimed their reward.
 * **getRaisedAmount**: Takes a funding request id and returns in-favor minus against votes clamped to the request's hard cap.
 * **getVotingReward**: Takes a funding request id and a voter address; returns the reward amount if the vote matched the final outcome.
 * **getTotalTokensLocked**: Returns the aggregate amount of tokens temporarily locked for voting.
 * **getCirculatingSupply**: Returns the current supply minus vested, locked and unswapped tokens.
 * **getExchangeState**: Takes a funding request id and returns the daily exchange cap, amount exchanged today, last exchange day and remaining INV-USD available for that request.
+* **activeEndorserList()**: Returns the array of currently active endorsers (function).
+* **isCEO(address)**: Returns true if the address is the current CEO.
+* **isEndorserActive(address)**: Returns true if the address is an active endorser.
 
 ### **B. Public State Variables (Auto-Generated Getters)**
 
 * **invUsdToken**: Returns the address of the internal InvUsdToken contract.
+* **whitelistManager**: Address of the WhitelistManager contract.
+* **swapContract**: Address of the swap contract approved to spend INV on behalf of the DAO.
 * **nextCeoApplicationId**: Counter for generating the next unique CEO application ID.
 * **activeCeoApplication**: Maps a user to their currently open CEO application ID.
   This ensures each address has at most one pending application at a time.
@@ -385,17 +427,21 @@ These functions retrieve data from the contract and do not cost any gas.
 * **recentVoteTimestamps**: Takes a voter address and returns the timestamp of their last vote.
 * **tokenUnlockTime**: Takes a voter address and returns the timestamp when their tokens will be unlocked.
 * **lockedBalanceRequirement**: Returns the minimum balance a voter must maintain during the lock period.
-* **activeEndorserList**: Returns the array of currently active endorsers. This
-  function has no parameters and returns up to 50 addresses.
 * **lowestActiveEndorser**: Returns the active endorser with the fewest votes.
 * **currentCeo**: The address of the presently active CEO.
 * **electedCeo**: The address elected by the DAO waiting for activation.
 * **electedCeoTimestamp**: Timestamp when the elected CEO was chosen.
 * **treasuryOwner**: Address that receives fees paid during applications.
+* **totalVestedTokens**: Current total of vested tokens excluded from circulation.
+* **totalUnswapped**: Current total of unswapped INV-USD excluded from circulation.
+* **lastPrice**: Last accepted INV/USD oracle price (18 decimals).
+* **votingDelegate**: Returns the address currently authorized to vote on behalf of a user (via signature delegation).
+* **ceoStatus**: Takes an address and returns its CEO status (None, Nominated, Elected, Active).
 * **CEO\_ROLE / ENDORSER\_ROLE**: Returns the bytes32 identifier for each role.
 * **CEO\_APPLICATION\_FEE / ENDORSER\_APPLICATION\_FEE / FUNDING\_REQUEST\_FEE**: Returns the fee amount (in USD value with 18 decimals) for each application type.
 * **CEO\_REQUIRED\_BALANCE\_USD / ENDORSER\_REQUIRED\_BALANCE\_USD**: Returns the minimum balance required (in USD value with 18 decimals) for applications.  
 * **ENDORSER\_VOTES\_FOR\_CEO\_PASS / ENDORSER\_VOTES\_FOR\_FUNDING\_PASS**: Returns the number of endorser votes required to pass the first stage.  
+* **MAX\_ACTIVE\_ENDORSERS / VOTING\_PERIOD / TOKEN\_LOCK\_DURATION / ELECTED\_CEO\_ACTIVATION\_DELAY / MAX\_PRICE\_DEVIATION\_BPS**: Public constants for limits and timings.
 * **VOTING\_PERIOD / TOKEN\_LOCK\_DURATION**: Returns the duration (in seconds) for these periods.
 
 ### **C. Inherited Standard Functions**
@@ -412,4 +458,11 @@ These functions retrieve data from the contract and do not cost any gas.
 * **delegates**: Takes a user address and returns the address they have delegated their votes to.  
 * **nonces**: Takes a user address and returns their current nonce for delegateBySig.
 * **hasRole**: Compatibility shim that checks if an account holds a role.
-* **DOMAIN_SEPARATOR**: Returns the EIP-712 domain separator for this contract, used in signing messages.
+
+### **D. WhitelistManager Reads**
+
+* **isWhitelisted(address)**: Returns true if the user is on the whitelist.
+* **getWhitelistingReqStatus(address)**: Returns the status of the caller's most recent whitelist request.
+* **getWwhitelistReqList()**: Returns all pending whitelist requests.
+* **getWhitelistInfo(address)**: Returns the stored personal info for a whitelisted user.
+* **whitelistRequests(uint256)** / **lastWhitelistRequest(address)** / **nextWhitelistRequestId()**: Administrative state for pending/processed requests.
