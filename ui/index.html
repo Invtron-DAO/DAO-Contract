@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invtron DAO Interface</title>
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <header>
+    <h1>Invtron DAO Interface</h1>
+    <div id="connection">Not Connected</div>
+  </header>
+  <div id="status"></div>
+  <section id="dashboard">
+    <h2>Dashboard</h2>
+    <p>Current Proposals: <span id="proposal-count">0</span></p>
+    <p>Fund Balance: <span id="fund-balance">0 ETH</span></p>
+  </section>
+  <section id="endorser-votes">
+    <h2>Active Endorsers</h2>
+    <table>
+      <thead>
+        <tr><th>Address</th><th>Votes</th></tr>
+      </thead>
+      <tbody id="endorser-table"></tbody>
+    </table>
+  </section>
+  <section id="functions">
+    <div id="tabs">
+      <button data-tab="user">User</button>
+      <button data-tab="endorser">Endorser</button>
+      <button data-tab="ceo">CEO</button>
+      <i class="fas fa-question-circle" onclick="showTutorial()"></i>
+    </div>
+    <div id="functions-user" class="tab-content"></div>
+    <div id="functions-endorser" class="tab-content"></div>
+    <div id="functions-ceo" class="tab-content"></div>
+  </section>
+  <button id="connect-button">Connect Wallet</button>
+  <script src="app.js"></script>
+</body>
+</html>
