@@ -5,7 +5,7 @@ This document provides a complete and detailed guide to interacting with the INV
 Endorser management, signature-based delegation, token holder tracking, funding requests and event declarations have been moved into dedicated libraries (`EndorserLib`, `DelegateLib`, `TokenHolderLib`, `FundingLib` and `EventLib`) to keep the core contract within the EVM size limit. The INV-USD voucher now lives in its own `InvUsdToken` contract deployed separately so the DAO can stay under the bytecode cap.
 Whitelisting requests are handled by a dedicated `WhitelistManager` contract deployed alongside the DAO. All major events are declared in `contracts/libraries/EventLib.sol` and must be emitted from contracts using `emit EventLib.<EventName>`. Whitelisting events are emitted exclusively by `WhitelistManager`; UI or other offchain consumers should monitor `WhitelistManager` events to track whitelist changes.
 Core governance logic is split across composable contracts. `CeoManager` contains CEO role and transition mechanics, `FundingManager` stores and exposes funding request data, and `ExchangeManager` manages INV-USD conversion limits, price feed updates, and unswapped token adjustments. `INVTRON_DAO` composes these modules to assemble the full DAO functionality.
-Redundant helper functions have been removed from `INVTRON_DAO`. Use `WhitelistManager` for whitelist status, `TokenHolderLib` for holder enumeration, and `PriceLib` for price and valuation helpers to avoid duplicated logic.
+Redundant helper functions have been removed from `INVTRON_DAO`. Use `WhitelistManager` for whitelist status, and `PriceLib` for price and valuation helpers to avoid duplicated logic. Token holder enumeration on-chain has been removed; `TokenHolderLib` now tracks holder presence (boolean) only, and the DAO maintains an O(1) running total of locked tokens via `totalLockedTokens`.
 Recent security updates include:
 
 - Endorser role assignments can only change via `challengeEndorser`; the CEO no longer administers `ENDORSER_ROLE`.
@@ -26,6 +26,8 @@ Pending CEO applications and funding requests now expire after 72 hours if endor
 Reward payouts record the delegate at the time of voting to prevent reassignment exploits and split delegated vote rewards 90/10 between the token holder and delegatee while the delegatee keeps the full reward from their own voting power. Voting power reflects 0.5% of the voter's USD-denominated holdings capped at 10% of the funding request, and rewards are computed as `votingPowerAtVote / 10` in USD(6) and converted to INV using the current oracle price.
 
 Funding request votes now sum the caller's own voting power and any delegated voting power—each calculated from past votes as `(voting power × token price) / 200`—rather than using raw token balances.
+
+Locked tokens accounting has been optimized: the DAO now maintains a running total of locked tokens (`totalLockedTokens`). The public view `getTotalTokensLocked()` returns this counter in O(1). Per-user lock status remains available via `tokenUnlockTime[user]` and `lockedBalanceRequirement[user]`.
 
 ## Requirements
 
@@ -339,7 +341,7 @@ These are standard functions from the OpenZeppelin contracts that INVTRON\_DAO i
 
 #### **delegate**
 
-* **Purpose:** Allows a user to delegate their INV voting power to another address or to themselves. **You must delegate to yourself to vote directly.**
+* **Purpose:** Allows a user to delegate their INV voting power to another address or to themselves. By default, voting power is self-delegated; call this only to delegate to another address or to reset back to self with `delegate(address(0))`.
 * **Notes:** Reverts with `Errors.TokensLocked()` if called before `tokenUnlockTime`.
 * **Inputs:**
   * delegatee (address): The address to delegate voting power to.
@@ -408,8 +410,8 @@ These functions retrieve data from the contract and do not cost any gas.
 * **rewardClaimed**: Takes a funding request id and a user address; returns true if the user already claimed their reward.
 * **getRaisedAmount**: Takes a funding request id and returns in-favor minus against votes clamped to the request's hard cap.
 * **getVotingReward**: Takes a funding request id and a voter address; returns the reward amount if the vote matched the final outcome.
-* **getTotalTokensLocked**: Returns the aggregate amount of tokens temporarily locked for voting.
-* **getCirculatingSupply**: Returns the current supply minus vested, locked and unswapped tokens.
+* **getTotalTokensLocked**: Returns the aggregate amount of tokens temporarily locked for voting (O(1) running counter).
+* **getCirculatingSupply**: Returns the current supply minus vested, locked and unswapped tokens (uses the running locked counter).
 * **getExchangeState**: Takes a funding request id and returns the daily exchange cap, amount exchanged today, last exchange day and remaining INV-USD available for that request.
 * **activeEndorserList()**: Returns the array of currently active endorsers (function).
 * **isCEO(address)**: Returns true if the address is the current CEO.
@@ -434,6 +436,7 @@ These functions retrieve data from the contract and do not cost any gas.
 * **treasuryOwner**: Address that receives fees paid during applications.
 * **totalVestedTokens**: Current total of vested tokens excluded from circulation.
 * **totalUnswapped**: Current total of unswapped INV-USD excluded from circulation.
+* **totalLockedTokens**: Running total of tokens locked by voting snapshots (O(1) getter). If a user’s lock expires without activity, the counter is corrected on subsequent interactions.
 * **lastPrice**: Last accepted INV/USD oracle price (18 decimals).
 * **votingDelegate**: Returns the address currently authorized to vote on behalf of a user (via signature delegation).
 * **ceoStatus**: Takes an address and returns its CEO status (None, Nominated, Elected, Active).

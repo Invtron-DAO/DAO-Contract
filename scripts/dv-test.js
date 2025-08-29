@@ -23,7 +23,6 @@ async function main() {
     ? process.env._initialEndorsers.split(/\s*,\s*/)
     : [];
   const treasuryOwner = process.env._treasuryOwner;
-  const swapContract = process.env._swapContract;
 
   function validateAddress(name, value) {
     if (!value || !ethers.utils.isAddress(value)) {
@@ -37,7 +36,7 @@ async function main() {
     validateAddress(`_initialEndorsers[${i}]`, addr)
   );
   validateAddress("_treasuryOwner", treasuryOwner);
-  validateAddress("_swapContract", swapContract);
+  // swapContract was removed from constructor; no validation needed.
 
   const CONFIRMATIONS = parseInt(process.env.DEPLOY_CONFIRMATIONS || "1", 10);
 
@@ -77,7 +76,7 @@ async function main() {
   console.log(`  _treasuryOwner: ${treasuryOwner}`);
   console.log(`  _invUsdToken: ${invUsdAddress}`);
   console.log(`  _whitelistManager: ${whitelistAddress}`);
-  console.log(`  _swapContract: ${swapContract}`);
+  // _swapContract removed
 
   const DAO = await ethers.getContractFactory("INVTRON_DAO");
   console.log("\u23F3 Deploying INVTRON_DAO...");
@@ -87,8 +86,7 @@ async function main() {
     initialEndorsers,
     treasuryOwner,
     invUsdAddress,
-    whitelistAddress,
-    swapContract
+    whitelistAddress
   );
   console.log("   tx:", dao.deployTransaction.hash);
   await dao.deployTransaction.wait(CONFIRMATIONS);
@@ -247,7 +245,6 @@ async function main() {
         treasuryOwner,
         invUsd.address,
         whitelist.address,
-        swapContract,
       ],
     });
     console.log("\u2705 Contract verified on Etherscan");

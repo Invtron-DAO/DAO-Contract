@@ -18,7 +18,6 @@ import "./libraries/ProposalLib.sol";
 abstract contract ExchangeManager is FundingManager, CeoManager, ReentrancyGuard {
     InvUsdToken public invUsdToken;
     AggregatorV3Interface internal priceFeed;
-    uint256 public totalUnswapped;
 
     // --- Price Guard ---
     int public lastPrice;
@@ -69,24 +68,7 @@ abstract contract ExchangeManager is FundingManager, CeoManager, ReentrancyGuard
         emit EventLib.PriceFeedUpdated(newFeed, lastPrice);
     }
 
-    /// @notice Increase the amount of unswapped tokens excluded from circulation.
-    function increaseTotalUnswapped(uint256 amount) external onlyCEO {
-        uint256 locked = _getTotalTokensLocked();
-        if (_totalVestedTokens() + totalUnswapped + locked + amount > _totalSupply()) {
-            revert Errors.SupplyExceedsTotal();
-        }
-        uint256 previous = totalUnswapped;
-        totalUnswapped += amount;
-        emit EventLib.TotalUnswappedUpdated(previous, totalUnswapped);
-    }
-
-    /// @notice Decrease the amount of unswapped tokens excluded from circulation.
-    function decreaseTotalUnswapped(uint256 amount) external onlyCEO {
-        if (amount > totalUnswapped) revert Errors.UnswappedAmountExceedsTotal();
-        uint256 previous = totalUnswapped;
-        totalUnswapped -= amount;
-        emit EventLib.TotalUnswappedUpdated(previous, totalUnswapped);
-    }
+    // Note: legacy unswapped-accounting functions removed.
 
     /// @notice Limit how much INV-USD can be converted back to INV each day for a request.
     /// @param requestId The funding request to configure.
@@ -136,10 +118,7 @@ abstract contract ExchangeManager is FundingManager, CeoManager, ReentrancyGuard
         _daoMint(msg.sender, invAmount);
         dailyExchangedAmount[requestId] += invUsdAmount;
         remainingToExchange[requestId] -= invUsdAmount;
-        uint256 prevUnswapped = totalUnswapped;
-        totalUnswapped -= invUsdAmount;
         lastPrice = currentPrice;
-        emit EventLib.TotalUnswappedUpdated(prevUnswapped, totalUnswapped);
         emit EventLib.Exchanged(msg.sender, invUsdAmount, invAmount);
     }
 }

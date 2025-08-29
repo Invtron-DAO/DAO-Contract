@@ -1,4 +1,4 @@
-// Auto-generated ABI. Updated by dv-test.js on 2025-08-28T21:03:30.176Z
+// Auto-generated ABI. Updated by dv-test.js on 2025-08-29T03:26:32.702Z
 window.INVTRON_DAO_ABI = [
   {
     "inputs": [
@@ -2556,6 +2556,19 @@ window.INVTRON_DAO_ABI = [
       }
     ],
     "name": "tokenUnlockTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalLockedTokens",
     "outputs": [
       {
         "internalType": "uint256",

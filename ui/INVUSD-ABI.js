@@ -1,4 +1,4 @@
-// Auto-generated InvUsdToken ABI. Updated by dv-test.js on 2025-08-28T21:03:30.178Z
+// Auto-generated InvUsdToken ABI. Updated by dv-test.js on 2025-08-29T03:26:32.727Z
 window.INVUSD_ABI = [
   {
     "inputs": [],

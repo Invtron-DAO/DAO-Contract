@@ -153,7 +153,8 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
 
     // --- Supply Tracking ---
     uint256 public totalVestedTokens;
-    address public swapContract;
+    // Running total of tokens locked by voting snapshots (sum of lockedBalanceRequirement for active locks)
+    uint256 public totalLockedTokens;
 
     // --- Hooks required by ExchangeManager ---
     function _totalSupply() internal view override returns (uint256) {
@@ -165,7 +166,7 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
     }
 
     function _getTotalTokensLocked() internal view override returns (uint256) {
-        return getTotalTokensLocked();
+        return totalLockedTokens;
     }
 
     function _balanceOfForVotes(address account) internal view override returns (uint256) {
@@ -205,16 +206,13 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
         address[] memory _initialEndorsers,
         address _treasuryOwner,
         address _invUsdToken,
-        address _whitelistManager,
-        address _swapContract
+        address _whitelistManager
     )
         ERC20("INVTRON", "INV")
         EIP712("INVTRON", "1")
     {
         invUsdToken = InvUsdToken(_invUsdToken);
         whitelistManager = WhitelistManager(_whitelistManager);
-        swapContract = _swapContract;
-        _approve(address(this), _swapContract, type(uint256).max);
 
         _setCeo(_initialCeo);
         if (_initialEndorsers.length > MAX_ACTIVE_ENDORSERS) {
@@ -246,16 +244,7 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
         treasuryOwner = newOwner;
     }
 
-    /// @notice Increase the amount of vested tokens excluded from circulation.
-    function increaseTotalVestedTokens(uint256 amount) external onlyCEO {
-        uint256 locked = getTotalTokensLocked();
-        if (totalVestedTokens + totalUnswapped + locked + amount > totalSupply()) {
-            revert Errors.SupplyExceedsTotal();
-        }
-        uint256 previous = totalVestedTokens;
-        totalVestedTokens += amount;
-        emit EventLib.TotalVestedTokensUpdated(previous, totalVestedTokens);
-    }
+    // Note: legacy vested/unswapped increase function removed.
 
     /// @notice Decrease the amount of vested tokens excluded from circulation.
     function decreaseTotalVestedTokens(uint256 amount) external onlyCEO {
@@ -606,8 +595,17 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
     }
 
     function _snapshotLock(address voter) internal {
+        // If an old lock expired, drop it from the running total
+        uint256 prevReq = lockedBalanceRequirement[voter];
+        if (prevReq != 0 && block.timestamp >= tokenUnlockTime[voter]) {
+            totalLockedTokens -= prevReq;
+            prevReq = 0;
+            lockedBalanceRequirement[voter] = 0;
+        }
         uint256 balAtVote = balanceOf(voter);
-        if (balAtVote > lockedBalanceRequirement[voter]) {
+        if (balAtVote > prevReq) {
+            uint256 delta = balAtVote - prevReq;
+            totalLockedTokens += delta;
             lockedBalanceRequirement[voter] = balAtVote;
         }
     }
@@ -671,15 +669,13 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
     function executeFundingRequest(uint256 id) external nonReentrant {
         FundingLib.FundingRequest storage req = _fundingState.fundingRequests[id];
         if (_currentRaisedClamped(req) == 0) revert Errors.FundingProposalFailed();
-        uint256 mintAmount = FundingLib.executeFundingRequest(
+        FundingLib.executeFundingRequest(
             _fundingState,
             invUsdToken,
             remainingToExchange,
             id
         );
-        uint256 previous = totalUnswapped;
-        totalUnswapped += mintAmount;
-        emit EventLib.TotalUnswappedUpdated(previous, totalUnswapped);
+        // Unswapped accounting removed; remainingToExchange still tracks per-request balances.
     }
 
     /// @notice View the clamped total raised amount for a funding request.
@@ -783,20 +779,17 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
     // --- Helpers ---
 
     /// @notice Calculate the total amount of tokens currently locked for voting.
+    /// @dev Running counter updated on vote snapshots and on expiries observed during transfers.
     function getTotalTokensLocked() public view returns (uint256 total) {
-        address[] memory holders = _tokenHolderState.getTokenHolders();
-        for (uint256 i = 0; i < holders.length; i++) {
-            address account = holders[i];
-            if (block.timestamp < tokenUnlockTime[account]) {
-                total += balanceOf(account);
-            }
-        }
+        return totalLockedTokens;
     }
+
+    // Intentionally no on-chain enumeration of holders; totals update lazily on activity.
 
     /// @notice Return the number of tokens currently in circulation.
     /// @dev Circulating supply excludes vested, locked and unswapped tokens.
     function getCirculatingSupply() external view returns (uint256) {
-        return totalSupply() - totalVestedTokens - totalUnswapped - getTotalTokensLocked();
+        return totalSupply() - totalVestedTokens - totalLockedTokens;
     }
     
     // --- Required Multi-Inheritance Overrides ---
@@ -808,34 +801,64 @@ contract INVTRON_DAO is ERC20, EIP712, ExchangeManager, __MinimalVotes {
     function _update(address from, address to, uint256 amount) internal override {
         uint256 oldFrom;
         uint256 oldTo;
-        if (from != address(0)) oldFrom = balanceOf(from);
-        if (to != address(0)) oldTo = balanceOf(to);
+        uint256 fromReq;
+        uint256 fromUnlock;
+        if (from != address(0)) {
+            oldFrom = balanceOf(from);
+            fromReq = lockedBalanceRequirement[from];
+            fromUnlock = tokenUnlockTime[from];
+        }
+        if (to != address(0)) {
+            oldTo = balanceOf(to);
+        }
 
         if (from != address(0)) {
             // During the lock window, allow spending only the excess over the required minimum
-            if (block.timestamp < tokenUnlockTime[from]) {
+            if (block.timestamp < fromUnlock) {
                 // Disallow spending from the locked (snapshot) portion
-                if (amount > oldFrom - lockedBalanceRequirement[from]) revert Errors.TokensLocked();
+                uint256 allowed = oldFrom - fromReq;
+                if (amount > allowed) revert Errors.TokensLocked();
             }
         }
 
         super._update(from, to, amount);
 
+        // Cache delegates once for minimal SLOADs
+        address fromDel;
+        address toDel;
+        if (from != address(0) && to != address(0)) {
+            fromDel = delegates(from);
+            toDel = delegates(to);
+        }
+
         if (from != address(0)) {
             uint256 newFrom = balanceOf(from);
-            _afterTokenBalanceChange(from, oldFrom, newFrom);
+            // Optimize voting power writes: if both sides delegate to the same address, net change is zero
+            if (!(from != address(0) && to != address(0) && fromDel == toDel)) {
+                _afterTokenBalanceChange(from, oldFrom, newFrom);
+            }
             if (newFrom == 0) {
                 _tokenHolderState.removeTokenHolder(from);
             }
-            if (lockedBalanceRequirement[from] != 0 && block.timestamp >= tokenUnlockTime[from]) {
+            // If lock expired, drop from running total and clear requirement
+            if (fromReq != 0 && block.timestamp >= fromUnlock) {
+                totalLockedTokens -= fromReq;
                 lockedBalanceRequirement[from] = 0;
             }
         }
         if (to != address(0)) {
             uint256 newTo = balanceOf(to);
-            _afterTokenBalanceChange(to, oldTo, newTo);
+            if (!(from != address(0) && to != address(0) && fromDel == toDel)) {
+                _afterTokenBalanceChange(to, oldTo, newTo);
+            }
             if (newTo > 0) {
                 _tokenHolderState.addTokenHolder(to);
+            }
+            // Also clear expired lock for `to` if any is lingering
+            uint256 toReq = lockedBalanceRequirement[to];
+            if (toReq != 0 && block.timestamp >= tokenUnlockTime[to]) {
+                totalLockedTokens -= toReq;
+                lockedBalanceRequirement[to] = 0;
             }
         }
     }

@@ -1,4 +1,4 @@
-// Auto-generated WhitelistManager ABI. Updated by dv-test.js on 2025-08-28T21:03:30.177Z
+// Auto-generated WhitelistManager ABI. Updated by dv-test.js on 2025-08-29T03:26:32.725Z
 window.WHITELIST_MANAGER_ABI = [
   {
     "inputs": [],

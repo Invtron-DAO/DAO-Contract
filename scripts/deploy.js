@@ -33,7 +33,6 @@ async function main() {
     : [];
   const treasuryOwner = validateAddress(requireEnv("_treasuryOwner"), "_treasuryOwner");
   const invUsdAddress = validateAddress(requireEnv("_invUsdToken"), "_invUsdToken");
-  const swapContract = validateAddress(requireEnv("_swapContract"), "_swapContract");
 
   const Whitelist = await ethers.getContractFactory("WhitelistManager");
   const whitelist = await Whitelist.deploy();
@@ -46,8 +45,7 @@ async function main() {
     initialEndorsers,
     treasuryOwner,
     invUsdAddress,
-    whitelist.address,
-    swapContract
+    whitelist.address
   );
   await dao.deployed();
   await whitelist.setDao(dao.address);
