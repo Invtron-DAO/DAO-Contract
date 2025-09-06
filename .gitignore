@@ -1,0 +1,26 @@
+node_modules
+.env
+.DS_Store
+# Hardhat files
+/cache
+/artifacts
+/gitignore/
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+DAO-Contract-backup.git/
+
+DAO-Contract-backup.git/
+
+DAO-Contract-backup.git/
+
+# Keep Local test files different from remote
+/test/

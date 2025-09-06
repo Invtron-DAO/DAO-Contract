@@ -1,0 +1,1 @@
+# Fix Voting - Make sure that voting For CEO does not affect the Voting power for a Funding Proposals, so if tokens are locked for funding proposal you can still use them for voting for CEO and Vice versa.

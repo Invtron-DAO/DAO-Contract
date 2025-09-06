@@ -1,0 +1,856 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "AddressDidNotVote",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DaoAddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DaoAlreadySet",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingEndorserAlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalNotActiveExecution",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalNotActiveUser",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalNotPending",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingProposalPassed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingRequestAlreadyApproved",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingRequestNotApproved",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingUserAlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingVotingActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingVotingActiveExecution",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FundingVotingEnded",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidFundingCaps",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTokenHolder",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidValuation",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NoVotingPower",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotWhitelisted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyCeo",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyEndorser",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OraclePriceInvalid",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ProposalNotFinalized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardAlreadyClaimed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SelfVoting",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokensLocked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "VoteMismatch",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "FundingRequestApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "proposer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "softCapAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "hardCapAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "FundingRequestCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "ProposalStatusUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "inFavor",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "votingPower",
+          "type": "uint256"
+        }
+      ],
+      "name": "Voted",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ENDORSER_VOTES_FOR_FUNDING_PASS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VOTING_PERIOD",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "fundingRequestId",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "projectName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "softCapAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hardCapAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "valuation",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "country",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "websiteUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "ceoLinkedInUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "shortDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "companyRegistrationUrl",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct FundingLib.FundingDetails",
+          "name": "details",
+          "type": "tuple"
+        }
+      ],
+      "name": "createFundingRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "dao",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "delegateAtVote",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "delegateePowerAtVote",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "expireFundingRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "finalizeFundingRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "fundingAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "fundingEndorsersVoted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "fundingRequests",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "proposer",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "projectName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "softCapAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "hardCapAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "valuation",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "string",
+                  "name": "country",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "websiteUrl",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "ceoLinkedInUrl",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "shortDescription",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "companyRegistrationUrl",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct FundingLib.FundingDetails",
+              "name": "details",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum ProposalLib.ProposalStatus",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endorserVotes",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "userVotesFor",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "userVotesAgainst",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "ceoApproved",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct FundingLib.FundingRequest",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "fundingStatus",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "fundingUserVoteChoice",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "fundingUsersVoted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "fundingRequestId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "getVotingReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardInvWei",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintTokensForFundingRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nextFundingRequestId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "proposerOf",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "releaseFundingRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "rewardClaimed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_dao",
+          "type": "address"
+        }
+      ],
+      "name": "setDao",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "voteOnFundingByEndorser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "inFavor",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenHolder",
+          "type": "address"
+        }
+      ],
+      "name": "voteOnFundingByUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "votingPowerAtVote",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

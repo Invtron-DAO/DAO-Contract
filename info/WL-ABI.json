@@ -1,0 +1,502 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "AlreadyWhitelisted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DaoAddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DaoAlreadySet",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NoWhitelistRequest",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyCeo",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "WhitelistRequestExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "WhitelistRequestNotPending",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "Whitelisted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "wallets",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bool",
+          "name": "approve",
+          "type": "bool"
+        }
+      ],
+      "name": "ceoApproveWhitelisting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "dao",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getWhitelistInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "firstName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "lastName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "mobile",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "zipCode",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "city",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "state",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "country",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bio",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct EndorserLib.PersonalInfo",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getWhitelistingReqStatus",
+      "outputs": [
+        {
+          "internalType": "enum WhitelistLib.RequestStatus",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWwhitelistReqList",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "applicant",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "firstName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "lastName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "mobile",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "zipCode",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "city",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "state",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "country",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "bio",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct EndorserLib.PersonalInfo",
+              "name": "info",
+              "type": "tuple"
+            },
+            {
+              "internalType": "enum WhitelistLib.RequestStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct WhitelistLib.Request[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "lastWhitelistRequest",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "value",
+          "type": "bool"
+        }
+      ],
+      "name": "makeWhitelisted",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nextWhitelistRequestId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "firstName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "lastName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "mobile",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "zipCode",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "city",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "state",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "country",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bio",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct EndorserLib.PersonalInfo",
+          "name": "info",
+          "type": "tuple"
+        }
+      ],
+      "name": "requestWhitelisting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_dao",
+          "type": "address"
+        }
+      ],
+      "name": "setDao",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelistInfo",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "firstName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "lastName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "mobile",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "zipCode",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "city",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "bio",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "whitelistRequests",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "applicant",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "firstName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "lastName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "mobile",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "zipCode",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "city",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "state",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "country",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bio",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct EndorserLib.PersonalInfo",
+          "name": "info",
+          "type": "tuple"
+        },
+        {
+          "internalType": "enum WhitelistLib.RequestStatus",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}
